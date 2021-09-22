@@ -1,0 +1,2737 @@
+{
+	"meta": {
+		"chronografVersion": "1.8.10",
+		"sources": {
+			"1": {
+				"name": "Influx 1",
+				"link": "/chronograf/v1/sources/1"
+			},
+			"2": {
+				"name": "Influx-old",
+				"link": "/chronograf/v1/sources/2"
+			},
+			"3": {
+				"name": "Influx 2",
+				"link": "/chronograf/v1/sources/3"
+			},
+			"4": {
+				"name": "DIAS InfluxDB for Login (monicenter DU)",
+				"link": "/chronograf/v1/sources/4"
+			},
+			"5": {
+				"name": "Composer DU Influx",
+				"link": "/chronograf/v1/sources/5"
+			},
+			"6": {
+				"name": "Influx mt-1",
+				"link": "/chronograf/v1/sources/6"
+			}
+		}
+	},
+	"dashboard": {
+		"id": "90",
+		"cells": [
+			{
+				"i": "87ca7566-0f6d-4b45-8592-81ad3ec946dd",
+				"x": 0,
+				"y": 29,
+				"w": 6,
+				"h": 6,
+				"name": "Cluster Data Used %",
+				"queries": [
+					{
+						"query": "sizeLimit = from(bucket: \"elastic_dias_prov_amr_mon/one_week\")\n  |> range(start: -15m)\n  |> filter(fn: (r) => r._measurement == \"exec\" and (r._field == \"es_index_size_limit\"))\n  |> window(every: autoInterval)\n  |> last()\n  |> drop(columns: [\"_time\", \"_start\", \"_stop\", \"_field\", \"_measurement\", \"host\", \"name\"])\n  |> group(columns: [\"domain_name\"], mode: \"except\")\n  \ncurrSize = from(bucket: \"elastic_dias_prov_amr_mon/one_week\")\n  |> range(start: -4m)\n  |> filter(fn: (r) => r._measurement == \"cloudwatch_aws_es\" and (r._field == \"cluster_used_space_average\"))\n  |> window(every: autoInterval)\n  |> last()\n  |> drop(columns: [\"_time\", \"_start\", \"_stop\", \"_field\", \"_measurement\", \"host\", \"region\"])\n  |> group(columns: [\"domain_name\"], mode: \"except\")\n  \nused_percent = join(tables: {currSize: currSize, sizeLimit: sizeLimit}, on: [\"domain_name\"])\n  |> map(fn:(r) => ({\n  domain_name: r.domain_name,\n  _value: (r._value_currSize * 0.001 * 100.0) / r._value_sizeLimit}))\n  |> yield(name: \"used_percentage\")\n  |> group(columns: [\"domain_name\"], mode: \"except\")",
+						"queryConfig": {
+							"database": "",
+							"measurement": "",
+							"retentionPolicy": "",
+							"fields": [],
+							"tags": {},
+							"groupBy": {
+								"time": "",
+								"tags": []
+							},
+							"areTagsAccepted": false,
+							"rawText": "sizeLimit = from(bucket: \"elastic_dias_prov_amr_mon/one_week\")\n  |> range(start: -15m)\n  |> filter(fn: (r) => r._measurement == \"exec\" and (r._field == \"es_index_size_limit\"))\n  |> window(every: autoInterval)\n  |> last()\n  |> drop(columns: [\"_time\", \"_start\", \"_stop\", \"_field\", \"_measurement\", \"host\", \"name\"])\n  |> group(columns: [\"domain_name\"], mode: \"except\")\n  \ncurrSize = from(bucket: \"elastic_dias_prov_amr_mon/one_week\")\n  |> range(start: -4m)\n  |> filter(fn: (r) => r._measurement == \"cloudwatch_aws_es\" and (r._field == \"cluster_used_space_average\"))\n  |> window(every: autoInterval)\n  |> last()\n  |> drop(columns: [\"_time\", \"_start\", \"_stop\", \"_field\", \"_measurement\", \"host\", \"region\"])\n  |> group(columns: [\"domain_name\"], mode: \"except\")\n  \nused_percent = join(tables: {currSize: currSize, sizeLimit: sizeLimit}, on: [\"domain_name\"])\n  |> map(fn:(r) => ({\n  domain_name: r.domain_name,\n  _value: (r._value_currSize * 0.001 * 100.0) / r._value_sizeLimit}))\n  |> yield(name: \"used_percentage\")\n  |> group(columns: [\"domain_name\"], mode: \"except\")",
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "flux"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "table",
+				"colors": [
+					{
+						"id": "base",
+						"type": "text",
+						"hex": "#00C9FF",
+						"name": "laser",
+						"value": "-1000000000000000000"
+					}
+				],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": false
+				},
+				"fieldOptions": [
+					{
+						"internalName": "domain_name",
+						"displayName": "",
+						"visible": true
+					},
+					{
+						"internalName": "_value",
+						"displayName": "Used Percentage %",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 2
+				},
+				"note": "",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/87ca7566-0f6d-4b45-8592-81ad3ec946dd"
+				}
+			},
+			{
+				"i": "2b1fdad3-ffd7-4f07-80e5-b52094744bc5",
+				"x": 9,
+				"y": 3,
+				"w": 3,
+				"h": 1,
+				"name": "SKU",
+				"queries": [
+					{
+						"query": "SELECT mean(\"sku\") AS \"mean_sku\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"exec\" WHERE \"domain_name\"=:ClientID: GROUP BY time(6h) FILL(null)",
+						"queryConfig": {
+							"database": "",
+							"measurement": "",
+							"retentionPolicy": "",
+							"fields": [],
+							"tags": {},
+							"groupBy": {
+								"time": "",
+								"tags": []
+							},
+							"areTagsAccepted": false,
+							"rawText": "SELECT mean(\"sku\") AS \"mean_sku\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"exec\" WHERE \"domain_name\"=:ClientID: GROUP BY time(6h) FILL(null)",
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "influxql"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "2",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "single-stat",
+				"colors": [
+					{
+						"id": "base",
+						"type": "text",
+						"hex": "#00C9FF",
+						"name": "laser",
+						"value": "-1000000000000000000"
+					}
+				],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "Status Check Time",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": true
+				},
+				"fieldOptions": [
+					{
+						"internalName": "cloudwatch_aws_es.mean_nodes_average",
+						"displayName": "",
+						"visible": true
+					},
+					{
+						"internalName": "domain_name",
+						"displayName": "",
+						"visible": true
+					},
+					{
+						"internalName": "time",
+						"displayName": "Status Check Time",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 1
+				},
+				"note": "",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/2b1fdad3-ffd7-4f07-80e5-b52094744bc5"
+				}
+			},
+			{
+				"i": "f3ec4998-7046-46ca-bc74-77b4e36b478e",
+				"x": 9,
+				"y": 2,
+				"w": 3,
+				"h": 1,
+				"name": "Cluster Limit (GB)",
+				"queries": [
+					{
+						"query": "SELECT mean(\"es_index_size_limit\") AS \"mean_es_index_size_limit\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"exec\" WHERE \"domain_name\"=:ClientID: GROUP BY time(6h) FILL(null)",
+						"queryConfig": {
+							"database": "",
+							"measurement": "",
+							"retentionPolicy": "",
+							"fields": [],
+							"tags": {},
+							"groupBy": {
+								"time": "",
+								"tags": []
+							},
+							"areTagsAccepted": false,
+							"rawText": "SELECT mean(\"es_index_size_limit\") AS \"mean_es_index_size_limit\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"exec\" WHERE \"domain_name\"=:ClientID: GROUP BY time(6h) FILL(null)",
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "influxql"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "2",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "single-stat",
+				"colors": [
+					{
+						"id": "base",
+						"type": "text",
+						"hex": "#00C9FF",
+						"name": "laser",
+						"value": "-1000000000000000000"
+					}
+				],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "Status Check Time",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": true
+				},
+				"fieldOptions": [
+					{
+						"internalName": "cloudwatch_aws_es.mean_nodes_average",
+						"displayName": "",
+						"visible": true
+					},
+					{
+						"internalName": "domain_name",
+						"displayName": "",
+						"visible": true
+					},
+					{
+						"internalName": "time",
+						"displayName": "Status Check Time",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 1
+				},
+				"note": "",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/f3ec4998-7046-46ca-bc74-77b4e36b478e"
+				}
+			},
+			{
+				"i": "c265cfc2-a58b-44ed-8663-a37fd4c4f633",
+				"x": 6,
+				"y": 2,
+				"w": 3,
+				"h": 2,
+				"name": "Cluster Size (GB)",
+				"queries": [
+					{
+						"query": "SELECT mean(\"cluster_used_space_average\") * 0.001 AS \"mean_cluster_used_space_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND time < :upperDashboardTime: AND \"domain_name\"=:ClientID: GROUP BY time(1h), \"domain_name\" FILL(null)",
+						"queryConfig": {
+							"database": "",
+							"measurement": "",
+							"retentionPolicy": "",
+							"fields": [],
+							"tags": {},
+							"groupBy": {
+								"time": "",
+								"tags": []
+							},
+							"areTagsAccepted": false,
+							"rawText": "SELECT mean(\"cluster_used_space_average\") * 0.001 AS \"mean_cluster_used_space_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND time < :upperDashboardTime: AND \"domain_name\"=:ClientID: GROUP BY time(1h), \"domain_name\" FILL(null)",
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "influxql"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "2",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "single-stat",
+				"colors": [
+					{
+						"id": "base",
+						"type": "text",
+						"hex": "#00C9FF",
+						"name": "laser",
+						"value": "-1000000000000000000"
+					}
+				],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "Status Check Time",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": true
+				},
+				"fieldOptions": [
+					{
+						"internalName": "cloudwatch_aws_es.mean_nodes_average",
+						"displayName": "",
+						"visible": true
+					},
+					{
+						"internalName": "domain_name",
+						"displayName": "",
+						"visible": true
+					},
+					{
+						"internalName": "time",
+						"displayName": "Status Check Time",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 1
+				},
+				"note": "",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/c265cfc2-a58b-44ed-8663-a37fd4c4f633"
+				}
+			},
+			{
+				"i": "6fbe1d99-5d9e-4019-aac8-58089d4bef2a",
+				"x": 3,
+				"y": 2,
+				"w": 3,
+				"h": 2,
+				"name": "No. of Docs",
+				"queries": [
+					{
+						"query": "SELECT mean(\"docs\") AS \"mean_docs\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"exec\" WHERE \"domain_name\"=:ClientID: GROUP BY time(6h) FILL(null)",
+						"queryConfig": {
+							"database": "",
+							"measurement": "",
+							"retentionPolicy": "",
+							"fields": [],
+							"tags": {},
+							"groupBy": {
+								"time": "",
+								"tags": []
+							},
+							"areTagsAccepted": false,
+							"rawText": "SELECT mean(\"docs\") AS \"mean_docs\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"exec\" WHERE \"domain_name\"=:ClientID: GROUP BY time(6h) FILL(null)",
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "influxql"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "2",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "single-stat",
+				"colors": [
+					{
+						"id": "base",
+						"type": "text",
+						"hex": "#00C9FF",
+						"name": "laser",
+						"value": "-1000000000000000000"
+					}
+				],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "Status Check Time",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": true
+				},
+				"fieldOptions": [
+					{
+						"internalName": "cloudwatch_aws_es.mean_nodes_average",
+						"displayName": "",
+						"visible": true
+					},
+					{
+						"internalName": "domain_name",
+						"displayName": "",
+						"visible": true
+					},
+					{
+						"internalName": "time",
+						"displayName": "Status Check Time",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 1
+				},
+				"note": "",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/6fbe1d99-5d9e-4019-aac8-58089d4bef2a"
+				}
+			},
+			{
+				"i": "34406bcc-f81f-47ae-b62e-b25f64fe5460",
+				"x": 0,
+				"y": 2,
+				"w": 3,
+				"h": 2,
+				"name": "Number of Nodes",
+				"queries": [
+					{
+						"query": "SELECT mean(\"nodes_average\") AS \"mean_nodes_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND time < :upperDashboardTime: AND \"domain_name\"=:ClientID: GROUP BY time(1h), \"domain_name\" FILL(null)",
+						"queryConfig": {
+							"database": "",
+							"measurement": "",
+							"retentionPolicy": "",
+							"fields": [],
+							"tags": {},
+							"groupBy": {
+								"time": "",
+								"tags": []
+							},
+							"areTagsAccepted": false,
+							"rawText": "SELECT mean(\"nodes_average\") AS \"mean_nodes_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND time < :upperDashboardTime: AND \"domain_name\"=:ClientID: GROUP BY time(1h), \"domain_name\" FILL(null)",
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "influxql"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "2",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "single-stat",
+				"colors": [
+					{
+						"id": "base",
+						"type": "text",
+						"hex": "#00C9FF",
+						"name": "laser",
+						"value": "-1000000000000000000"
+					}
+				],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "Status Check Time",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": true
+				},
+				"fieldOptions": [
+					{
+						"internalName": "cloudwatch_aws_es.mean_nodes_average",
+						"displayName": "",
+						"visible": true
+					},
+					{
+						"internalName": "domain_name",
+						"displayName": "",
+						"visible": true
+					},
+					{
+						"internalName": "time",
+						"displayName": "Status Check Time",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 1
+				},
+				"note": "",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/34406bcc-f81f-47ae-b62e-b25f64fe5460"
+				}
+			},
+			{
+				"i": "475b11e9-2177-4ecd-a095-8abd3d021879",
+				"x": 0,
+				"y": 19,
+				"w": 6,
+				"h": 4,
+				"name": "Cluster Writes Blocked",
+				"queries": [
+					{
+						"query": "SELECT mean(\"cluster_index_writes_blocked_maximum\") AS \"mean_cluster_index_writes_blocked_maximum\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND \"domain_name\" = :ClientID: GROUP BY time(:interval:), \"domain_name\" FILL(null)",
+						"queryConfig": {
+							"database": "",
+							"measurement": "",
+							"retentionPolicy": "",
+							"fields": [],
+							"tags": {},
+							"groupBy": {
+								"time": "",
+								"tags": []
+							},
+							"areTagsAccepted": false,
+							"rawText": "SELECT mean(\"cluster_index_writes_blocked_maximum\") AS \"mean_cluster_index_writes_blocked_maximum\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND \"domain_name\" = :ClientID: GROUP BY time(:interval:), \"domain_name\" FILL(null)",
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "influxql"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "line",
+				"colors": [
+					{
+						"id": "3a301346-3b83-4221-8b8c-cc46c023178f",
+						"type": "scale",
+						"hex": "#31C0F6",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "5c439e36-489e-4d9a-9c6d-80767f27da80",
+						"type": "scale",
+						"hex": "#A500A5",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "d92a27c0-0c91-496a-a521-cf27dcf6b43b",
+						"type": "scale",
+						"hex": "#FF7E27",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					}
+				],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": true
+				},
+				"fieldOptions": [
+					{
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 2
+				},
+				"note": "",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/475b11e9-2177-4ecd-a095-8abd3d021879"
+				}
+			},
+			{
+				"i": "05d2291f-0301-4759-bf33-95e032f24fda",
+				"x": 8,
+				"y": 15,
+				"w": 4,
+				"h": 4,
+				"name": "Elastic Infrastructure - JVM Memory Pressure per node for Client",
+				"queries": [
+					{
+						"query": "SELECT mean(\"jvm_memory_pressure_average\") AS \"mean_jvm_memory_pressure_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND \"node_id\"!='' AND domain_name = :ClientID: GROUP BY time(:interval:), \"domain_name\", \"node_id\" FILL(null)",
+						"queryConfig": {
+							"database": "",
+							"measurement": "",
+							"retentionPolicy": "",
+							"fields": [],
+							"tags": {},
+							"groupBy": {
+								"time": "",
+								"tags": []
+							},
+							"areTagsAccepted": false,
+							"rawText": "SELECT mean(\"jvm_memory_pressure_average\") AS \"mean_jvm_memory_pressure_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND \"node_id\"!='' AND domain_name = :ClientID: GROUP BY time(:interval:), \"domain_name\", \"node_id\" FILL(null)",
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "influxql"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							"100"
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "%",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "line",
+				"colors": [
+					{
+						"id": "ef4ca3bc-aff7-46e0-84f0-412164387830",
+						"type": "scale",
+						"hex": "#31C0F6",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "2c4384cd-e7cf-4955-b3ee-2851281c3bda",
+						"type": "scale",
+						"hex": "#A500A5",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "3c75b3c8-fab9-48e3-b1ba-88515c1af12c",
+						"type": "scale",
+						"hex": "#FF7E27",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					}
+				],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": true
+				},
+				"fieldOptions": [
+					{
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 2
+				},
+				"note": "",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/05d2291f-0301-4759-bf33-95e032f24fda"
+				}
+			},
+			{
+				"i": "871adf84-2e1c-4b48-9535-2c862d70b573",
+				"x": 4,
+				"y": 15,
+				"w": 4,
+				"h": 4,
+				"name": "Elastic Infrastructure - Free Storage per node for Client",
+				"queries": [
+					{
+						"query": "SELECT mean(\"free_storage_space_average\") AS \"mean_free_storage_space_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND \"node_id\"!='' AND domain_name = :ClientID: GROUP BY time(:interval:), \"domain_name\", \"node_id\" FILL(null)",
+						"queryConfig": {
+							"database": "",
+							"measurement": "",
+							"retentionPolicy": "",
+							"fields": [],
+							"tags": {},
+							"groupBy": {
+								"time": "",
+								"tags": []
+							},
+							"areTagsAccepted": false,
+							"rawText": "SELECT mean(\"free_storage_space_average\") AS \"mean_free_storage_space_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND \"node_id\"!='' AND domain_name = :ClientID: GROUP BY time(:interval:), \"domain_name\", \"node_id\" FILL(null)",
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "influxql"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "line",
+				"colors": [
+					{
+						"id": "ef4ca3bc-aff7-46e0-84f0-412164387830",
+						"type": "scale",
+						"hex": "#31C0F6",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "2c4384cd-e7cf-4955-b3ee-2851281c3bda",
+						"type": "scale",
+						"hex": "#A500A5",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "3c75b3c8-fab9-48e3-b1ba-88515c1af12c",
+						"type": "scale",
+						"hex": "#FF7E27",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					}
+				],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": true
+				},
+				"fieldOptions": [
+					{
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 2
+				},
+				"note": "",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/871adf84-2e1c-4b48-9535-2c862d70b573"
+				}
+			},
+			{
+				"i": "3c9e2759-8580-45fe-ac6c-32ed7bc04d18",
+				"x": 0,
+				"y": 15,
+				"w": 4,
+				"h": 4,
+				"name": "Elastic Infrastructure - CPU Utilization per node for Client",
+				"queries": [
+					{
+						"query": "SELECT mean(\"cpu_utilization_average\") AS \"mean_cpu_utilization_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND \"node_id\"!='' AND domain_name = :ClientID: GROUP BY time(:interval:), \"domain_name\",\"node_id\" FILL(null)",
+						"queryConfig": {
+							"database": "",
+							"measurement": "",
+							"retentionPolicy": "",
+							"fields": [],
+							"tags": {},
+							"groupBy": {
+								"time": "",
+								"tags": []
+							},
+							"areTagsAccepted": false,
+							"rawText": "SELECT mean(\"cpu_utilization_average\") AS \"mean_cpu_utilization_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND \"node_id\"!='' AND domain_name = :ClientID: GROUP BY time(:interval:), \"domain_name\",\"node_id\" FILL(null)",
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "influxql"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							"100"
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "%",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "line",
+				"colors": [
+					{
+						"id": "ef4ca3bc-aff7-46e0-84f0-412164387830",
+						"type": "scale",
+						"hex": "#31C0F6",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "2c4384cd-e7cf-4955-b3ee-2851281c3bda",
+						"type": "scale",
+						"hex": "#A500A5",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "3c75b3c8-fab9-48e3-b1ba-88515c1af12c",
+						"type": "scale",
+						"hex": "#FF7E27",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					}
+				],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": true
+				},
+				"fieldOptions": [
+					{
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 2
+				},
+				"note": "",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/3c9e2759-8580-45fe-ac6c-32ed7bc04d18"
+				}
+			},
+			{
+				"i": "0ccaab25-178f-4ecf-936c-36d19f2b91ee",
+				"x": 0,
+				"y": 0,
+				"w": 12,
+				"h": 2,
+				"name": "",
+				"queries": [
+					{
+						"query": "",
+						"queryConfig": {
+							"database": "",
+							"measurement": "",
+							"retentionPolicy": "",
+							"fields": [],
+							"tags": {},
+							"groupBy": {
+								"time": "",
+								"tags": []
+							},
+							"areTagsAccepted": false,
+							"rawText": "",
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "influxql"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "note",
+				"colors": [],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": true
+				},
+				"fieldOptions": [
+					{
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 2
+				},
+				"note": "## By Client",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/0ccaab25-178f-4ecf-936c-36d19f2b91ee"
+				}
+			},
+			{
+				"i": "92810596-a1bd-42d8-a2b2-b8abb0fd015c",
+				"x": 0,
+				"y": 23,
+				"w": 12,
+				"h": 2,
+				"name": "",
+				"queries": [
+					{
+						"query": "",
+						"queryConfig": {
+							"database": "",
+							"measurement": "",
+							"retentionPolicy": "",
+							"fields": [],
+							"tags": {},
+							"groupBy": {
+								"time": "",
+								"tags": []
+							},
+							"areTagsAccepted": false,
+							"rawText": "",
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "influxql"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "note",
+				"colors": [],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": true
+				},
+				"fieldOptions": [
+					{
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 2
+				},
+				"note": "## All Clients",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/92810596-a1bd-42d8-a2b2-b8abb0fd015c"
+				}
+			},
+			{
+				"i": "5090cfbf-71df-408d-8afa-94795fe2cbbd",
+				"x": 4,
+				"y": 11,
+				"w": 4,
+				"h": 4,
+				"name": "Elastic Infrastructure - Free Storage for Client",
+				"queries": [
+					{
+						"query": "SELECT mean(\"free_storage_space_average\") AS \"mean_free_storage_space_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND \"domain_name\"=:ClientID: GROUP BY time(:interval:), \"domain_name\" FILL(previous)",
+						"queryConfig": {
+							"database": "",
+							"measurement": "",
+							"retentionPolicy": "",
+							"fields": [],
+							"tags": {},
+							"groupBy": {
+								"time": "",
+								"tags": []
+							},
+							"areTagsAccepted": false,
+							"rawText": "SELECT mean(\"free_storage_space_average\") AS \"mean_free_storage_space_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND \"domain_name\"=:ClientID: GROUP BY time(:interval:), \"domain_name\" FILL(previous)",
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "influxql"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"0",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "2",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "line",
+				"colors": [
+					{
+						"id": "6a0dbf59-f3a4-4da9-96e5-6d0a9d4064a7",
+						"type": "scale",
+						"hex": "#31C0F6",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "dfe8c5f9-4c8e-4b49-b251-990f8077a115",
+						"type": "scale",
+						"hex": "#A500A5",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "88eda071-219d-45e4-8df5-c17fbaed2a4e",
+						"type": "scale",
+						"hex": "#FF7E27",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					}
+				],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": true
+				},
+				"fieldOptions": [
+					{
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 2
+				},
+				"note": "",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/5090cfbf-71df-408d-8afa-94795fe2cbbd"
+				}
+			},
+			{
+				"i": "282df680-6996-4fb7-983c-82e71ce55437",
+				"x": 6,
+				"y": 25,
+				"w": 6,
+				"h": 4,
+				"name": "Elastic Infrastructure -  All Clusters 5xx Status",
+				"queries": [
+					{
+						"query": "SELECT mean(\"free_storage_space_average\") AS \"mean_free_storage_space_average\", mean(\"5xx_maximum\") AS \"mean_5xx_maximum\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: GROUP BY time(:interval:), \"domain_name\" FILL(null)",
+						"queryConfig": {
+							"database": "elastic_dias_prov_amr_mon",
+							"measurement": "cloudwatch_aws_es",
+							"retentionPolicy": "one_week",
+							"fields": [
+								{
+									"value": "mean",
+									"type": "func",
+									"alias": "mean_free_storage_space_average",
+									"args": [
+										{
+											"value": "free_storage_space_average",
+											"type": "field",
+											"alias": ""
+										}
+									]
+								},
+								{
+									"value": "mean",
+									"type": "func",
+									"alias": "mean_5xx_maximum",
+									"args": [
+										{
+											"value": "5xx_maximum",
+											"type": "field",
+											"alias": ""
+										}
+									]
+								}
+							],
+							"tags": {},
+							"groupBy": {
+								"time": "auto",
+								"tags": [
+									"domain_name"
+								]
+							},
+							"areTagsAccepted": false,
+							"fill": "null",
+							"rawText": null,
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "influxql"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "2",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "line",
+				"colors": [
+					{
+						"id": "6a0dbf59-f3a4-4da9-96e5-6d0a9d4064a7",
+						"type": "scale",
+						"hex": "#31C0F6",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "dfe8c5f9-4c8e-4b49-b251-990f8077a115",
+						"type": "scale",
+						"hex": "#A500A5",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "88eda071-219d-45e4-8df5-c17fbaed2a4e",
+						"type": "scale",
+						"hex": "#FF7E27",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					}
+				],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": true
+				},
+				"fieldOptions": [
+					{
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 2
+				},
+				"note": "",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/282df680-6996-4fb7-983c-82e71ce55437"
+				}
+			},
+			{
+				"i": "ac808bd7-8c86-4a54-a1c1-09c63faa3ca6",
+				"x": 8,
+				"y": 11,
+				"w": 4,
+				"h": 4,
+				"name": "Elastic Infrastructure - JVM Memory Pressure for Client",
+				"queries": [
+					{
+						"query": "SELECT mean(\"jvm_memory_pressure_average\") AS \"mean_jvm_memory_pressure_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND domain_name = :ClientID: GROUP BY time(:interval:), \"domain_name\" FILL(null)",
+						"queryConfig": {
+							"database": "",
+							"measurement": "",
+							"retentionPolicy": "",
+							"fields": [],
+							"tags": {},
+							"groupBy": {
+								"time": "",
+								"tags": []
+							},
+							"areTagsAccepted": false,
+							"rawText": "SELECT mean(\"jvm_memory_pressure_average\") AS \"mean_jvm_memory_pressure_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND domain_name = :ClientID: GROUP BY time(:interval:), \"domain_name\" FILL(null)",
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "influxql"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							"100"
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "%",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "line",
+				"colors": [
+					{
+						"id": "6a0dbf59-f3a4-4da9-96e5-6d0a9d4064a7",
+						"type": "scale",
+						"hex": "#31C0F6",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "dfe8c5f9-4c8e-4b49-b251-990f8077a115",
+						"type": "scale",
+						"hex": "#A500A5",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "88eda071-219d-45e4-8df5-c17fbaed2a4e",
+						"type": "scale",
+						"hex": "#FF7E27",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					}
+				],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": true
+				},
+				"fieldOptions": [
+					{
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 2
+				},
+				"note": "",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/ac808bd7-8c86-4a54-a1c1-09c63faa3ca6"
+				}
+			},
+			{
+				"i": "57f52096-3770-42a0-85d9-e9114b38b43a",
+				"x": 0,
+				"y": 11,
+				"w": 4,
+				"h": 4,
+				"name": "Elastic Infrastructure - CPU Utilization for Client",
+				"queries": [
+					{
+						"query": "SELECT mean(\"cpu_utilization_average\") AS \"mean_cpu_utilization_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND domain_name = :ClientID: GROUP BY time(:interval:), \"domain_name\" FILL(null)",
+						"queryConfig": {
+							"database": "",
+							"measurement": "",
+							"retentionPolicy": "",
+							"fields": [],
+							"tags": {},
+							"groupBy": {
+								"time": "",
+								"tags": []
+							},
+							"areTagsAccepted": false,
+							"rawText": "SELECT mean(\"cpu_utilization_average\") AS \"mean_cpu_utilization_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND domain_name = :ClientID: GROUP BY time(:interval:), \"domain_name\" FILL(null)",
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "influxql"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							"100"
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "%",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "line",
+				"colors": [
+					{
+						"id": "6a0dbf59-f3a4-4da9-96e5-6d0a9d4064a7",
+						"type": "scale",
+						"hex": "#31C0F6",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "dfe8c5f9-4c8e-4b49-b251-990f8077a115",
+						"type": "scale",
+						"hex": "#A500A5",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "88eda071-219d-45e4-8df5-c17fbaed2a4e",
+						"type": "scale",
+						"hex": "#FF7E27",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					}
+				],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": true
+				},
+				"fieldOptions": [
+					{
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 2
+				},
+				"note": "",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/57f52096-3770-42a0-85d9-e9114b38b43a"
+				}
+			},
+			{
+				"i": "218e8da1-0c9e-4116-bae2-2781682cddc3",
+				"x": 0,
+				"y": 25,
+				"w": 6,
+				"h": 4,
+				"name": "Elastic Infrastructure - All Clusters 4xx Status",
+				"queries": [
+					{
+						"query": "SELECT mean(\"4xx_maximum\") AS \"mean_4xx_maximum\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: GROUP BY time(:interval:), \"domain_name\" FILL(null)",
+						"queryConfig": {
+							"database": "elastic_dias_prov_amr_mon",
+							"measurement": "cloudwatch_aws_es",
+							"retentionPolicy": "one_week",
+							"fields": [
+								{
+									"value": "mean",
+									"type": "func",
+									"alias": "mean_4xx_maximum",
+									"args": [
+										{
+											"value": "4xx_maximum",
+											"type": "field",
+											"alias": ""
+										}
+									]
+								}
+							],
+							"tags": {},
+							"groupBy": {
+								"time": "auto",
+								"tags": [
+									"domain_name"
+								]
+							},
+							"areTagsAccepted": false,
+							"fill": "null",
+							"rawText": null,
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "influxql"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							"100"
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "%",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "line",
+				"colors": [
+					{
+						"id": "6a0dbf59-f3a4-4da9-96e5-6d0a9d4064a7",
+						"type": "scale",
+						"hex": "#31C0F6",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "dfe8c5f9-4c8e-4b49-b251-990f8077a115",
+						"type": "scale",
+						"hex": "#A500A5",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "88eda071-219d-45e4-8df5-c17fbaed2a4e",
+						"type": "scale",
+						"hex": "#FF7E27",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					}
+				],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": true
+				},
+				"fieldOptions": [
+					{
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 2
+				},
+				"note": "",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/218e8da1-0c9e-4116-bae2-2781682cddc3"
+				}
+			},
+			{
+				"i": "9487a8f9-a57f-40e6-96c9-0036b28c60cd",
+				"x": 8,
+				"y": 7,
+				"w": 4,
+				"h": 4,
+				"name": "HTTP Response = 5xx",
+				"queries": [
+					{
+						"query": "SELECT mean(\"5xx_average\") AS \"mean_5xx_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND \"domain_name\" = :ClientID:  GROUP BY time(:interval:), \"domain_name\" FILL(null)",
+						"queryConfig": {
+							"database": "",
+							"measurement": "",
+							"retentionPolicy": "",
+							"fields": [],
+							"tags": {},
+							"groupBy": {
+								"time": "",
+								"tags": []
+							},
+							"areTagsAccepted": false,
+							"rawText": "SELECT mean(\"5xx_average\") AS \"mean_5xx_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND \"domain_name\" = :ClientID:  GROUP BY time(:interval:), \"domain_name\" FILL(null)",
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "influxql"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "2",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "line",
+				"colors": [
+					{
+						"id": "3c904bc2-9462-45c4-aa0c-5a3ca4ad0a5c",
+						"type": "scale",
+						"hex": "#FD7A5D",
+						"name": "Delorean",
+						"value": "0"
+					},
+					{
+						"id": "a53e20b9-7945-40e4-9043-0eab9348a02f",
+						"type": "scale",
+						"hex": "#5F1CF2",
+						"name": "Delorean",
+						"value": "0"
+					},
+					{
+						"id": "bd8c59a3-db36-4a72-ae03-9ae2c9ef0af8",
+						"type": "scale",
+						"hex": "#4CE09A",
+						"name": "Delorean",
+						"value": "0"
+					}
+				],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": true
+				},
+				"fieldOptions": [
+					{
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 2
+				},
+				"note": "",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/9487a8f9-a57f-40e6-96c9-0036b28c60cd"
+				}
+			},
+			{
+				"i": "85352edf-000c-4c80-8c9d-499d3bea189a",
+				"x": 4,
+				"y": 7,
+				"w": 4,
+				"h": 4,
+				"name": "HTTP Response = 4xx",
+				"queries": [
+					{
+						"query": "SELECT mean(\"4xx_average\") AS \"mean_4xx_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND \"domain_name\" = :ClientID: GROUP BY time(:interval:), \"domain_name\" FILL(null)",
+						"queryConfig": {
+							"database": "",
+							"measurement": "",
+							"retentionPolicy": "",
+							"fields": [],
+							"tags": {},
+							"groupBy": {
+								"time": "",
+								"tags": []
+							},
+							"areTagsAccepted": false,
+							"rawText": "SELECT mean(\"4xx_average\") AS \"mean_4xx_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND \"domain_name\" = :ClientID: GROUP BY time(:interval:), \"domain_name\" FILL(null)",
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "influxql"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "2",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "line",
+				"colors": [
+					{
+						"id": "3c904bc2-9462-45c4-aa0c-5a3ca4ad0a5c",
+						"type": "scale",
+						"hex": "#FD7A5D",
+						"name": "Delorean",
+						"value": "0"
+					},
+					{
+						"id": "a53e20b9-7945-40e4-9043-0eab9348a02f",
+						"type": "scale",
+						"hex": "#5F1CF2",
+						"name": "Delorean",
+						"value": "0"
+					},
+					{
+						"id": "bd8c59a3-db36-4a72-ae03-9ae2c9ef0af8",
+						"type": "scale",
+						"hex": "#4CE09A",
+						"name": "Delorean",
+						"value": "0"
+					}
+				],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": true
+				},
+				"fieldOptions": [
+					{
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 2
+				},
+				"note": "",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/85352edf-000c-4c80-8c9d-499d3bea189a"
+				}
+			},
+			{
+				"i": "7d80d757-8a8a-4072-9f4f-18e06aa1ab05",
+				"x": 0,
+				"y": 7,
+				"w": 4,
+				"h": 4,
+				"name": "HTTP Response = 200",
+				"queries": [
+					{
+						"query": "SELECT mean(\"2xx_average\") AS \"mean_2xx_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND \"domain_name\" = :ClientID: GROUP BY time(:interval:), \"domain_name\" FILL(null)",
+						"queryConfig": {
+							"database": "",
+							"measurement": "",
+							"retentionPolicy": "",
+							"fields": [],
+							"tags": {},
+							"groupBy": {
+								"time": "",
+								"tags": []
+							},
+							"areTagsAccepted": false,
+							"rawText": "SELECT mean(\"2xx_average\") AS \"mean_2xx_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND \"domain_name\" = :ClientID: GROUP BY time(:interval:), \"domain_name\" FILL(null)",
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "influxql"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "2",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "line",
+				"colors": [
+					{
+						"id": "72797980-f383-4315-86ac-8d0f1cb737a8",
+						"type": "scale",
+						"hex": "#74D495",
+						"name": "Atlantis",
+						"value": "0"
+					},
+					{
+						"id": "f7cbfebd-abf8-4433-98b4-f86a30306057",
+						"type": "scale",
+						"hex": "#3F3FBA",
+						"name": "Atlantis",
+						"value": "0"
+					},
+					{
+						"id": "84d887a2-e137-4396-96d5-079747fd30d6",
+						"type": "scale",
+						"hex": "#FF4D9E",
+						"name": "Atlantis",
+						"value": "0"
+					}
+				],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": true
+				},
+				"fieldOptions": [
+					{
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 2
+				},
+				"note": "",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/7d80d757-8a8a-4072-9f4f-18e06aa1ab05"
+				}
+			},
+			{
+				"i": "913af131-a694-45b6-b5b5-12f7f9853f13",
+				"x": 0,
+				"y": 4,
+				"w": 12,
+				"h": 3,
+				"name": "Cluster Status (Green/Yellow/Red)",
+				"queries": [
+					{
+						"query": "SELECT mean(\"cluster_status.red_maximum\") AS \"mean_cluster_status.red_maximum\", mean(\"cluster_status.yellow_maximum\") AS \"mean_cluster_status.yellow_maximum\", mean(\"cluster_status.green_maximum\") AS \"mean_cluster_status.green_maximum\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND domain_name = :ClientID: GROUP BY time(6h), \"domain_name\" FILL(null)",
+						"queryConfig": {
+							"database": "",
+							"measurement": "",
+							"retentionPolicy": "",
+							"fields": [],
+							"tags": {},
+							"groupBy": {
+								"time": "",
+								"tags": []
+							},
+							"areTagsAccepted": false,
+							"rawText": "SELECT mean(\"cluster_status.red_maximum\") AS \"mean_cluster_status.red_maximum\", mean(\"cluster_status.yellow_maximum\") AS \"mean_cluster_status.yellow_maximum\", mean(\"cluster_status.green_maximum\") AS \"mean_cluster_status.green_maximum\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND domain_name = :ClientID: GROUP BY time(6h), \"domain_name\" FILL(null)",
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "influxql"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "2",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "line",
+				"colors": [
+					{
+						"id": "f90b9222-77a4-4f08-a95c-7f5d1e2f8b0d",
+						"type": "scale",
+						"hex": "#31C0F6",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "719da109-df7c-43f7-a943-c3d5bd6c8a93",
+						"type": "scale",
+						"hex": "#A500A5",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "d461a504-98de-4d2d-b662-85802e8c19db",
+						"type": "scale",
+						"hex": "#FF7E27",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					}
+				],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "Status Check Time",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": true
+				},
+				"fieldOptions": [
+					{
+						"internalName": "domain_name",
+						"displayName": "Domain Name",
+						"visible": true
+					},
+					{
+						"internalName": "time",
+						"displayName": "Status Check Time",
+						"visible": true
+					},
+					{
+						"internalName": "cloudwatch_aws_es.max_cluster_status.red_maximum",
+						"displayName": "Cluster Status RED",
+						"visible": true
+					},
+					{
+						"internalName": "cloudwatch_aws_es.max_cluster_status.yellow_maximum",
+						"displayName": "Cluster Status YELLOW",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 1
+				},
+				"note": "",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/913af131-a694-45b6-b5b5-12f7f9853f13"
+				}
+			},
+			{
+				"i": "49a8a948-8e12-43ab-90b8-81765e8719b5",
+				"x": 6,
+				"y": 19,
+				"w": 6,
+				"h": 4,
+				"name": "Indexing Rate",
+				"queries": [
+					{
+						"query": "SELECT mean(\"indexing_rate_average\") AS \"mean_indexing_rate_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND \"domain_name\"=:ClientID: GROUP BY time(1h), \"domain_name\" FILL(previous)",
+						"queryConfig": {
+							"database": "",
+							"measurement": "",
+							"retentionPolicy": "",
+							"fields": [],
+							"tags": {},
+							"groupBy": {
+								"time": "",
+								"tags": []
+							},
+							"areTagsAccepted": false,
+							"rawText": "SELECT mean(\"indexing_rate_average\") AS \"mean_indexing_rate_average\" FROM \"elastic_dias_prov_amr_mon\".\"one_week\".\"cloudwatch_aws_es\" WHERE time > :dashboardTime: AND \"domain_name\"=:ClientID: GROUP BY time(1h), \"domain_name\" FILL(previous)",
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "influxql"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "line",
+				"colors": [
+					{
+						"id": "3a301346-3b83-4221-8b8c-cc46c023178f",
+						"type": "scale",
+						"hex": "#31C0F6",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "5c439e36-489e-4d9a-9c6d-80767f27da80",
+						"type": "scale",
+						"hex": "#A500A5",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					},
+					{
+						"id": "d92a27c0-0c91-496a-a521-cf27dcf6b43b",
+						"type": "scale",
+						"hex": "#FF7E27",
+						"name": "Nineteen Eighty Four",
+						"value": "0"
+					}
+				],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": true
+				},
+				"fieldOptions": [
+					{
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 2
+				},
+				"note": "",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/49a8a948-8e12-43ab-90b8-81765e8719b5"
+				}
+			},
+			{
+				"i": "ae9ef1dc-e88a-48c3-a7bc-2419491556c2",
+				"x": 6,
+				"y": 29,
+				"w": 6,
+				"h": 6,
+				"name": "Violating Clusters",
+				"queries": [
+					{
+						"query": "sizeLimit = from(bucket: \"elastic_dias_prov_amr_mon/one_week\")\n  |> range(start: -15m)\n  |> filter(fn: (r) => r._measurement == \"exec\" and (r._field == \"es_index_size_limit\"))\n  |> window(every: autoInterval)\n  |> last()\n  |> drop(columns: [\"_time\", \"_start\", \"_stop\", \"_field\", \"_measurement\", \"host\", \"name\"])\n  |> group(columns: [\"domain_name\"], mode: \"except\")\n  \ncurrSize = from(bucket: \"elastic_dias_prov_amr_mon/one_week\")\n  |> range(start: -4m)\n  |> filter(fn: (r) => r._measurement == \"cloudwatch_aws_es\" and (r._field == \"cluster_used_space_average\"))\n  |> window(every: autoInterval)\n  |> last()\n  |> drop(columns: [\"_time\", \"_start\", \"_stop\", \"_field\", \"_measurement\", \"host\", \"region\"])\n  |> group(columns: [\"domain_name\"], mode: \"except\")\n  \nviolation = join(tables: {currSize: currSize, sizeLimit: sizeLimit}, on: [\"domain_name\"])\n  |> filter(fn: (r) => (r._value_currSize * 0.001) > r._value_sizeLimit)\n  |> map(fn:(r) => ({\n  domain_name: r.domain_name,\n  _value: (r._value_currSize * 0.001 * 100.0) / r._value_sizeLimit}))\n  |> last()\n  |> yield(name: \"Violations\")\n  |> group(columns: [\"bucket_name\"], mode: \"except\")",
+						"queryConfig": {
+							"database": "",
+							"measurement": "",
+							"retentionPolicy": "",
+							"fields": [],
+							"tags": {},
+							"groupBy": {
+								"time": "",
+								"tags": []
+							},
+							"areTagsAccepted": false,
+							"rawText": "sizeLimit = from(bucket: \"elastic_dias_prov_amr_mon/one_week\")\n  |> range(start: -15m)\n  |> filter(fn: (r) => r._measurement == \"exec\" and (r._field == \"es_index_size_limit\"))\n  |> window(every: autoInterval)\n  |> last()\n  |> drop(columns: [\"_time\", \"_start\", \"_stop\", \"_field\", \"_measurement\", \"host\", \"name\"])\n  |> group(columns: [\"domain_name\"], mode: \"except\")\n  \ncurrSize = from(bucket: \"elastic_dias_prov_amr_mon/one_week\")\n  |> range(start: -4m)\n  |> filter(fn: (r) => r._measurement == \"cloudwatch_aws_es\" and (r._field == \"cluster_used_space_average\"))\n  |> window(every: autoInterval)\n  |> last()\n  |> drop(columns: [\"_time\", \"_start\", \"_stop\", \"_field\", \"_measurement\", \"host\", \"region\"])\n  |> group(columns: [\"domain_name\"], mode: \"except\")\n  \nviolation = join(tables: {currSize: currSize, sizeLimit: sizeLimit}, on: [\"domain_name\"])\n  |> filter(fn: (r) => (r._value_currSize * 0.001) > r._value_sizeLimit)\n  |> map(fn:(r) => ({\n  domain_name: r.domain_name,\n  _value: (r._value_currSize * 0.001 * 100.0) / r._value_sizeLimit}))\n  |> last()\n  |> yield(name: \"Violations\")\n  |> group(columns: [\"bucket_name\"], mode: \"except\")",
+							"range": null,
+							"shifts": null
+						},
+						"source": "",
+						"type": "flux"
+					}
+				],
+				"axes": {
+					"x": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					},
+					"y2": {
+						"bounds": [
+							"",
+							""
+						],
+						"label": "",
+						"prefix": "",
+						"suffix": "",
+						"base": "10",
+						"scale": "linear"
+					}
+				},
+				"type": "table",
+				"colors": [
+					{
+						"id": "base",
+						"type": "text",
+						"hex": "#00C9FF",
+						"name": "laser",
+						"value": "-1000000000000000000"
+					}
+				],
+				"legend": {},
+				"tableOptions": {
+					"verticalTimeAxis": true,
+					"sortBy": {
+						"internalName": "time",
+						"displayName": "",
+						"visible": true
+					},
+					"wrapping": "truncate",
+					"fixFirstColumn": false
+				},
+				"fieldOptions": [
+					{
+						"internalName": "domain_name",
+						"displayName": "",
+						"visible": true
+					},
+					{
+						"internalName": "_value",
+						"displayName": "Used Percentage %",
+						"visible": true
+					}
+				],
+				"timeFormat": "MM/DD/YYYY HH:mm:ss",
+				"decimalPlaces": {
+					"isEnforced": true,
+					"digits": 2
+				},
+				"note": "",
+				"noteVisibility": "default",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/cells/ae9ef1dc-e88a-48c3-a7bc-2419491556c2"
+				}
+			}
+		],
+		"templates": [
+			{
+				"tempVar": ":ClientID:",
+				"values": [
+					{
+						"value": "dias-prov-am-trial",
+						"type": "tagValue",
+						"selected": true
+					}
+				],
+				"id": "263f4d81-dec1-41eb-8cf3-ec5ef955fc44",
+				"type": "tagValues",
+				"label": "",
+				"query": {
+					"influxql": "SHOW TAG VALUES ON :database: FROM :measurement: WITH KEY=:tagKey:",
+					"db": "elastic_dias_prov_amr_mon",
+					"measurement": "cloudwatch_aws_es",
+					"tagKey": "domain_name",
+					"fieldKey": ""
+				},
+				"sourceID": "dynamic",
+				"links": {
+					"self": "/chronograf/v1/dashboards/90/templates/263f4d81-dec1-41eb-8cf3-ec5ef955fc44"
+				}
+			}
+		],
+		"name": "AM - Elastic Search Component",
+		"organization": "default",
+		"links": {
+			"self": "/chronograf/v1/dashboards/90",
+			"cells": "/chronograf/v1/dashboards/90/cells",
+			"templates": "/chronograf/v1/dashboards/90/templates"
+		}
+	}
+}
